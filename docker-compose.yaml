@@ -1,0 +1,25 @@
+version: "3.3"
+
+services:
+  db:
+    image: postgres
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=bouncykings
+      - POSTGRES_USER=katya
+      - POSTGRES_PASSWORD=site2022
+  web:
+    command: bash -c "
+      python manage.py migrate &&
+      python manage.py runserver 0.0.0.0:8000 --insecure"
+    environment:
+      - DJANGO_DEBUG=True
+      - DB_HOST=db
+#    volumes:
+#      - .:/code
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    restart: always
