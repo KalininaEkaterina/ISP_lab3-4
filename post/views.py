@@ -1,5 +1,7 @@
 from asgiref.sync import sync_to_async
 from django.shortcuts import render, redirect
+from django.template import context
+
 from .models import Nursery
 from .Forms import TaskForm
 from django.contrib.auth.forms import UserCreationForm
@@ -7,6 +9,7 @@ from .Forms import CreateUserForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 import asyncio
+from django.views.generic import UpdateView,DeleteView
 
 from django.contrib.auth import authenticate, login, logout
 
@@ -19,6 +22,19 @@ async def _create_nursery(image, form, request):
         user=request.user
     )
     return 0
+
+
+class RecordUpdateView(UpdateView):
+    model = Nursery
+    success_url = '/'
+    template_name = 'post/create2.html'
+
+    form_class = TaskForm
+
+class RecordDeleteView(DeleteView):
+    model = Nursery
+    success_url = '/'
+    template_name = 'post/delete.html'
 
 
 def register(request):
@@ -60,7 +76,11 @@ def LoginPase(request):
 
 def logoutUser(request):
     logout(request)
-    return redirect('login')
+    return redirect('main')
+
+def main(request):
+    nursery = Nursery.objects.all()
+    return render(request, 'post/main.html', {'title': 'Питомник BouncyKings', 'nursery': nursery})
 
 
 def index(request):
